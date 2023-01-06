@@ -69,7 +69,7 @@ export class ProductsService {
 
     try {
       await this.productRepository.save(product);
-      return;
+      return product;
     } catch (error) {
       this.handleDBExceptions(error);
     }
