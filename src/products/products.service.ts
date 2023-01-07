@@ -136,4 +136,14 @@ export class ProductsService {
       'Unexpected Error. check server logs',
     );
   }
+
+  async deleteAllProducts() {
+    const query = this.productImageRepository.createQueryBuilder('product');
+
+    try {
+      return await query.delete().where({}).execute();
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
 }
