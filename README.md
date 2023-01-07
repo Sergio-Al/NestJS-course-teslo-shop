@@ -14,3 +14,11 @@
 ```
 docker-compose up -d
 ```
+
+5. Execute Seed command
+```
+[GET]
+http://localhost:3000/api/seed
+```
+
+6. Run app ```npm run start:dev```
