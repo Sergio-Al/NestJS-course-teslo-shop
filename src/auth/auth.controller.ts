@@ -14,7 +14,7 @@ import { AuthService } from './auth.service';
 import { User } from './entities/user.entity';
 
 import { CreateUserDto, LoginUserDto } from './dto';
-import { GetUser } from './decorators/get-user.decorator';
+import { GetUser, RawHeaders } from './decorators/';
 
 @Controller('auth')
 export class AuthController {
@@ -32,11 +32,18 @@ export class AuthController {
 
   @Get('private')
   @UseGuards(AuthGuard())
-  testingPrivateRouter(@GetUser() user: User) {
+  testingPrivateRouter(
+    @Req() request: Express.Request,
+    @GetUser() user: User,
+    @GetUser('email') userEmail: string,
+    @RawHeaders() rawHeaders: string[],
+  ) {
     return {
       ok: true,
       message: 'Hello world private',
       user,
+      userEmail,
+      rawHeaders,
     };
   }
 }
