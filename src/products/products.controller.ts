@@ -1,4 +1,4 @@
-import { PaginationDto } from './../common/dtos/pagination.dto';
+import { ValidRoles } from './../auth/interfaces/valid-roles';
 import {
   Controller,
   Get,
@@ -10,15 +10,20 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
+
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { PaginationDto } from './../common/dtos/pagination.dto';
+
+import { Auth } from 'src/auth/decorators';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @Auth(ValidRoles.admin)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
@@ -35,6 +40,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @Auth(ValidRoles.admin)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -43,6 +49,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Auth(ValidRoles.admin)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.remove(id);
   }
