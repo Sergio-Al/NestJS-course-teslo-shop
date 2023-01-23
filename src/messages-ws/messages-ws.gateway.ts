@@ -21,19 +21,19 @@ export class MessagesWsGateway
     private readonly messagesWsService: MessagesWsService,
     private readonly jwtService: JwtService,
   ) {}
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     // this is an extraheader sent by the client 'authentication' is a custom key name
     const token = client.handshake.headers.authentication as string;
     let payload: JwtPayload;
     try {
       payload = this.jwtService.verify(token);
+      await this.messagesWsService.registerClient(client, payload.id);
     } catch (error) {
       client.disconnect();
       return;
     }
-    console.log(payload);
+    // console.log(payload);
     // console.log('client connected', client.id);
-    this.messagesWsService.registerClient(client);
 
     this.wws.emit(
       'clients-updated',
@@ -66,7 +66,7 @@ export class MessagesWsGateway
 
     //! Emits everyone
     this.wws.emit('message-from-server', {
-      fullName: 'Its me',
+      fullName: this.messagesWsService.getUserFullName(client.id),
       message: payload.message || 'no-message',
     });
   }
