@@ -1,4 +1,4 @@
-import { NewMessageDto } from './dtos/new-message.dto';
+import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -7,7 +7,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { JwtPayload } from './../auth/interfaces/jwt-payload.interface';
 import { MessagesWsService } from './messages-ws.service';
+import { NewMessageDto } from './dtos/new-message.dto';
 
 @WebSocketGateway({ cors: true })
 export class MessagesWsGateway
@@ -15,11 +17,21 @@ export class MessagesWsGateway
 {
   @WebSocketServer() wws: Server; // this is the global socket instance (all clients can hear this)
 
-  constructor(private readonly messagesWsService: MessagesWsService) {}
+  constructor(
+    private readonly messagesWsService: MessagesWsService,
+    private readonly jwtService: JwtService,
+  ) {}
   handleConnection(client: Socket) {
     // this is an extraheader sent by the client 'authentication' is a custom key name
     const token = client.handshake.headers.authentication as string;
-    console.log(token);
+    let payload: JwtPayload;
+    try {
+      payload = this.jwtService.verify(token);
+    } catch (error) {
+      client.disconnect();
+      return;
+    }
+    console.log(payload);
     // console.log('client connected', client.id);
     this.messagesWsService.registerClient(client);
 
