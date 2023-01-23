@@ -17,6 +17,9 @@ export class MessagesWsGateway
 
   constructor(private readonly messagesWsService: MessagesWsService) {}
   handleConnection(client: Socket) {
+    // this is an extraheader sent by the client 'authentication' is a custom key name
+    const token = client.handshake.headers.authentication as string;
+    console.log(token);
     // console.log('client connected', client.id);
     this.messagesWsService.registerClient(client);
 
