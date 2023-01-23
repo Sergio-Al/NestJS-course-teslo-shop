@@ -8,13 +8,14 @@ import {
   UseInterceptors,
   Res,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags, ApiProperty } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
 import { FilesService } from './files.service';
 
+import { UploadFileDto } from './dto/upload-file.dto';
 import { filteFilter, fileNamer } from './helpers';
 
 @ApiTags('Files - Get and Upload')
@@ -35,6 +36,11 @@ export class FilesController {
       }),
     }),
   )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Your product image',
+    type: UploadFileDto,
+  })
   uploadProductImage(
     @UploadedFile()
     file: Express.Multer.File,
@@ -54,7 +60,8 @@ export class FilesController {
   @Get('product/:imageName')
   findProductImage(
     @Res() res: Response,
-    @Param('imageName') imageName: string,
+    @Param('imageName')
+    imageName: string,
   ) {
     const path = this.filesService.getStaticProductImage(imageName);
 

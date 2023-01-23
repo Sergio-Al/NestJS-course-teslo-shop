@@ -10,7 +10,7 @@ import {
   Req,
   SetMetadata,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { User } from './entities/user.entity';
@@ -31,6 +31,11 @@ export class AuthController {
     return this.authService.create(createUserDto);
   }
 
+  @ApiResponse({
+    status: 201,
+    description:
+      'Created. Use the token as your authentication for the endpoints',
+  })
   @Post('login')
   loginUser(@Body() loginUserDto: LoginUserDto) {
     return this.authService.loginUser(loginUserDto);
